@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "deploy": "next build && gulp cleanAndCopy"
+    "deploy": "cross-env NODE_ENV=production next build && gulp cleanAndCopy"
   },
   "dependencies": {
     "next": "14.0.4",
@@ -15,6 +15,7 @@
     "react-dom": "^18"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "del": "^6.1.1",
     "eslint": "^8",
     "eslint-config-next": "14.0.4",
