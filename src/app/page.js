@@ -40,31 +40,35 @@ export default function Watermark() {
 
   return (
     <main className={styles.main}>
-      <div>
-        <p>origin picture</p>
-        <input
-          ref={originInputRef}
-          type='file'
-          accept='image/*'
-          onChange={handleOriginInputChange}
-        ></input>
+      <div className={styles.uploadContainer}>
+        <div>
+          <p>origin picture</p>
+          <input
+            ref={originInputRef}
+            type='file'
+            accept='image/*'
+            onChange={handleOriginInputChange}
+          ></input>
+        </div>
+        <div>
+          <p>watermark picture</p>
+          <input
+            ref={watermarkInputRef}
+            type='file'
+            accept='image/*'
+            onChange={handleWatermarkInputChange}
+          ></input>
+        </div>
       </div>
-      <div>
-        <p>watermark picture</p>
-        <input
-          ref={watermarkInputRef}
-          type='file'
-          accept='image/*'
-          onChange={handleWatermarkInputChange}
-        ></input>
-      </div>
-      <div>
-        <p>preview</p>
-        <canvas ref={canvasRef}></canvas>
-      </div>
-      <div>
-        <p>output picture</p>
-        <button onClick={handleGenerateButtonClick}>generate</button>
+      <div className={styles.outputContainer}>
+        <div>
+          <p>preview</p>
+          <canvas ref={canvasRef}></canvas>
+        </div>
+        <div>
+          <p>output picture</p>
+          <button onClick={handleGenerateButtonClick}>generate</button>
+        </div>
       </div>
     </main>
   );
