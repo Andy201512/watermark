@@ -5,30 +5,29 @@ import { useRef } from 'react';
 
 export default function Watermark() {
 
-  const originInputRef = useRef(null);
-  const watermarkInputRef = useRef(null);
-  const canvasRef = useRef(null);
+  const previewBackgroundRef = useRef(null);
+  const previewWatermarkRef = useRef(null);
 
   function handleOriginInputChange(e) {
-    let ctx = canvasRef.current.getContext("2d");
     let img = new Image();
     img.src = URL.createObjectURL(e.target.files[0]);
     img.onload = function () {
-      ctx.drawImage(img, 0, 0);
+      previewBackgroundRef.current.append(img)
     };
   };
 
   function handleWatermarkInputChange(e) {
-    let ctx = canvasRef.current.getContext("2d");
     let img = new Image();
     img.src = URL.createObjectURL(e.target.files[0]);
     img.onload = function () {
-      ctx.drawImage(img, 0, 0);
+      previewWatermarkRef.current.append(img)
     };
   };
 
   function handleGenerateButtonClick() {
-    let canvas = canvasRef.current;
+    let canvas = document.createElement('canvas');
+    let ctx = canvas.getContext("2d");
+    // ctx.drawImage(img, 0, 0);
 
     const el = document.createElement('a');
     el.href = canvas.toDataURL();
@@ -43,7 +42,6 @@ export default function Watermark() {
       <div className={styles.origin}>
         <p>origin picture</p>
         <input
-          ref={originInputRef}
           type='file'
           accept='image/*'
           onChange={handleOriginInputChange}
@@ -52,7 +50,6 @@ export default function Watermark() {
       <div className={styles.watermark}>
         <p>watermark picture</p>
         <input
-          ref={watermarkInputRef}
           type='file'
           accept='image/*'
           onChange={handleWatermarkInputChange}
@@ -60,7 +57,10 @@ export default function Watermark() {
       </div>
       <div className={styles.preview}>
         <p>preview</p>
-        <canvas ref={canvasRef}></canvas>
+        <div className={styles.previewBox}>
+          <div ref={previewBackgroundRef} className={styles.previewBackground}></div>
+          <div ref={previewWatermarkRef} className={styles.previewWatermark}></div>
+        </div>
       </div>
       <div className={styles.output}>
         <p>output picture</p>
