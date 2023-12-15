@@ -7,6 +7,7 @@ export default function Watermark() {
 
   const previewBackgroundRef = useRef(null);
   const previewWatermarkRef = useRef(null);
+  const dropDistance = {x: 0,y: 0};
 
   function handleOriginInputChange(e) {
     let img = new Image();
@@ -22,6 +23,25 @@ export default function Watermark() {
     img.onload = function () {
       previewWatermarkRef.current.append(img)
     };
+    img.addEventListener("dragstart", handleWatermarkDragstart);
+    img.addEventListener("dragend", handleWatermarkDragend);
+  };
+
+  function handleWatermarkDragstart(e) {
+    dropDistance.x = e.screenX;
+    dropDistance.y = e.screenY;
+  };
+
+  function setNewDistance(ref, name, value){
+    ref.style[name] = parseFloat(window.getComputedStyle(ref, null)[name]) + value + 'px';
+  };
+
+  function handleWatermarkDragend(e) {
+    dropDistance.x = e.screenX - dropDistance.x;
+    dropDistance.y = e.screenY - dropDistance.y;
+    let element = previewWatermarkRef.current
+    setNewDistance(element, 'top', dropDistance.y);
+    setNewDistance(element, 'left', dropDistance.x);
   };
 
   function handleGenerateButtonClick() {
