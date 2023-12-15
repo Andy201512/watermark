@@ -9,6 +9,31 @@ export default function Watermark() {
   const previewWatermarkRef = useRef(null);
   const dropDistance = {x: 0,y: 0};
 
+  // 一个获取元素定位样式数值的方法
+  function getCPS (ref, name){ return parseFloat(window.getComputedStyle(ref, null)[name]) }; 
+  
+  // 一个获取元素长宽样式数值的方法
+  function getCLS(ref, name){ return parseFloat(window.getComputedStyle(ref, null)[name === "top" ? 'height' : 'width']) }; 
+
+  function getNewDistance(ref, bgRef, name, moveValue){
+
+    // 为了限制水印不超出原图范围，区分情形赋值，合法赋值区间应是背景线减去水印线的宽线上
+    // bgstart   ----------------------------------   bgend  背景区间
+    // wtstart                               ======   wtend  水印区间
+    // lgstart   ****************************         lgend  合法区间
+
+    // 另外由于居中定位给原图和水印图都加了百分比定位和百分比平移，计算时要补上对齐
+    
+    const computedValue = getCPS(ref, name) + moveValue;
+    const bgStart = getCPS(bgRef, name) - 0.5 * getCLS(bgRef, name) + 0.5 * getCLS(ref, name);
+    const bgEnd = bgStart + getCLS(bgRef, name) - getCLS(ref, name);
+    
+    if(computedValue < bgStart) return bgStart;
+    if(computedValue > bgEnd) return bgEnd;
+    return computedValue;
+  };
+
+
   function handleOriginInputChange(e) {
     let img = new Image();
     img.src = URL.createObjectURL(e.target.files[0]);
@@ -32,16 +57,14 @@ export default function Watermark() {
     dropDistance.y = e.screenY;
   };
 
-  function setNewDistance(ref, name, value){
-    ref.style[name] = parseFloat(window.getComputedStyle(ref, null)[name]) + value + 'px';
-  };
-
   function handleWatermarkDragend(e) {
     dropDistance.x = e.screenX - dropDistance.x;
     dropDistance.y = e.screenY - dropDistance.y;
-    let element = previewWatermarkRef.current
-    setNewDistance(element, 'top', dropDistance.y);
-    setNewDistance(element, 'left', dropDistance.x);
+
+    const ref = previewWatermarkRef.current
+    const bgRef = previewBackgroundRef.current;
+    ref.style.top = getNewDistance(ref, bgRef, 'top', dropDistance.y) + 'px';
+    ref.style.left = getNewDistance(ref, bgRef, 'left', dropDistance.x) + 'px';
   };
 
   function handleGenerateButtonClick() {
