@@ -139,16 +139,16 @@ export default function Watermark() {
           ref={watermarkInputRef}
         ></input>
       </div>
+      <div className={styles.output}>
+        <p>output picture</p>
+        <button onClick={handleGenerateButtonClick}>generate</button>
+      </div>
       <div className={styles.preview}>
         <p>preview</p>
         <div className={styles.previewBox}>
           <div ref={previewBackgroundRef} className={styles.previewBackground}></div>
           <div ref={previewWatermarkRef} className={styles.previewWatermark}></div>
         </div>
-      </div>
-      <div className={styles.output}>
-        <p>output picture</p>
-        <button onClick={handleGenerateButtonClick}>generate</button>
       </div>
     </main>
   );

@@ -1,12 +1,14 @@
 .main {
   display: grid;
-  padding: 3rem;
+  padding: 2rem;
   min-height: 100vh;
   grid-template-areas:
     "origin"
     "watermark"
-    "preview"
-    "output";
+    "output"
+    "preview";
+  grid-template-rows: repeat(3, 1fr) 7fr; /* 3.各区域 宽高设置 */
+  grid-template-columns: 1fr;
 }
 
 .origin {
@@ -62,10 +64,11 @@
 
 @media (min-width: 700px) {
   .main {
-    padding: 6rem;
-    grid-template-columns: repeat(4, 1fr);
+    padding: 4rem;
     grid-template-areas:
-      "origin origin watermark watermark"
-      "preview preview preview output";
+      "origin watermark output"
+      "preview preview preview ";
+    grid-template-rows: 1fr 7fr; /* 3.各区域 宽高设置 */
+    grid-template-columns: repeat(3, 1fr);
   }
 }
