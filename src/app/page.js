@@ -36,6 +36,12 @@ export default function Watermark() {
 
 
   function handleOriginInputChange(e) {
+     
+    if(!e.target.files[0]){
+      if(document.getElementById('bgImg')){document.getElementById('bgImg').remove()};
+      return;
+    };
+    
     const img = document.createElement('img');
     img.id = 'bgImg';
     img.src = URL.createObjectURL(e.target.files[0]);
@@ -45,6 +51,12 @@ export default function Watermark() {
   };
 
   function handleWatermarkInputChange(e) {
+    
+    if(!e.target.files[0]){
+      if(document.getElementById('wmImg')){document.getElementById('wmImg').remove()};
+      return;
+    };
+
     const img = document.createElement('img');
     img.id = 'wmImg';
     img.src = URL.createObjectURL(e.target.files[0]);
@@ -73,6 +85,10 @@ export default function Watermark() {
   };
 
   function handleGenerateButtonClick() {
+
+    if(!document.getElementById('bgImg')){ alert('please select a origin picture!'); return};
+    if(!document.getElementById('wmImg')){ alert('please select a watermark picture!'); return};
+
     const bgRef = previewBackgroundRef.current;
     const wmRef = previewWatermarkRef.current;
 
