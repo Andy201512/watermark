@@ -13,21 +13,21 @@ export default function Watermark() {
   function getCSNum(ref, name) { return parseFloat(window.getComputedStyle(ref, null)[name]) };
 
   // 获取新的水印定位
-  function getNewDistance(wtRef, bgRef, name, moveValue) {
+  function getNewDistance(wmRef, bgRef, name, moveValue) {
 
     // 为了限制水印不超出原图范围，区分情形赋值，合法赋值区间应是背景线减去水印线的宽线上
     // bgstart   ----------------------------------   bgend  背景区间
-    // wtstart                               ======   wtend  水印区间
+    // wmstart                               ======   wmend  水印区间
     // lgstart   ****************************         lgend  合法区间
 
     // 另外由于居中定位给原图和水印图都加了百分比定位和百分比平移，计算时要补上对齐
 
-    const computedValue = getCSNum(wtRef, name) + moveValue;
+    const computedValue = getCSNum(wmRef, name) + moveValue;
     const bgl = getCSNum(bgRef, name === "top" ? 'height' : 'width');
-    const wtl = getCSNum(wtRef, name === "top" ? 'height' : 'width');
+    const wml = getCSNum(wmRef, name === "top" ? 'height' : 'width');
 
-    const bgStart = getCSNum(bgRef, name) - 0.5 * (bgl - wtl);
-    const bgEnd = bgStart + bgl - wtl;
+    const bgStart = getCSNum(bgRef, name) - 0.5 * (bgl - wml);
+    const bgEnd = bgStart + bgl - wml;
 
     if (computedValue < bgStart) return bgStart;
     if (computedValue > bgEnd) return bgEnd;
@@ -46,7 +46,7 @@ export default function Watermark() {
 
   function handleWatermarkInputChange(e) {
     const img = document.createElement('img');
-    img.id = 'wtImg';
+    img.id = 'wmImg';
     img.src = URL.createObjectURL(e.target.files[0]);
     img.onload = function () {
       previewWatermarkRef.current.append(img)
@@ -65,16 +65,16 @@ export default function Watermark() {
     dropDistance.y = e.screenY - dropDistance.y;
 
     const bgRef = previewBackgroundRef.current;
-    const wtRef = previewWatermarkRef.current;
+    const wmRef = previewWatermarkRef.current;
 
 
-    wtRef.style.top = getNewDistance(wtRef, bgRef, 'top', dropDistance.y) + 'px';
-    wtRef.style.left = getNewDistance(wtRef, bgRef, 'left', dropDistance.x) + 'px';
+    wmRef.style.top = getNewDistance(wmRef, bgRef, 'top', dropDistance.y) + 'px';
+    wmRef.style.left = getNewDistance(wmRef, bgRef, 'left', dropDistance.x) + 'px';
   };
 
   function handleGenerateButtonClick() {
     const bgRef = previewBackgroundRef.current;
-    const wtRef = previewWatermarkRef.current;
+    const wmRef = previewWatermarkRef.current;
 
     const canvas = document.createElement('canvas',
       {
@@ -86,10 +86,10 @@ export default function Watermark() {
     ctx.drawImage(document.getElementById('bgImg'), 0, 0);
 
     // TODO: 可以梳理一下看有没有更简便的偏移坐标算法
-    let offsetX = getCSNum(wtRef, 'left') - (getCSNum(bgRef, 'left') - 0.5 * (getCSNum(bgRef, 'width') - getCSNum(wtRef, 'width')));
-    let offsetY = getCSNum(wtRef, 'top') - (getCSNum(bgRef, 'top') - 0.5 * (getCSNum(bgRef, 'height') - getCSNum(wtRef, 'height')));
+    let offsetX = getCSNum(wmRef, 'left') - (getCSNum(bgRef, 'left') - 0.5 * (getCSNum(bgRef, 'width') - getCSNum(wmRef, 'width')));
+    let offsetY = getCSNum(wmRef, 'top') - (getCSNum(bgRef, 'top') - 0.5 * (getCSNum(bgRef, 'height') - getCSNum(wmRef, 'height')));
 
-    ctx.drawImage(document.getElementById('wtImg'), offsetX, offsetY);
+    ctx.drawImage(document.getElementById('wmImg'), offsetX, offsetY);
 
     const el = document.createElement('a');
     el.href = canvas.toDataURL();
