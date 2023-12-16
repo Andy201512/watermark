@@ -5,12 +5,10 @@ import { useRef } from 'react';
 
 export default function Watermark() {
 
+  const watermarkInputRef = useRef(null)
   const previewBackgroundRef = useRef(null);
   const previewWatermarkRef = useRef(null);
   const dropDistance = { x: 0, y: 0 };
-
-  // 获取元素样式数值的方法
-  function getCSNum(ref, name) { return parseFloat(window.getComputedStyle(ref, null)[name]) };
 
   // 获取新的水印定位
   function getNewDistance(wmRef, bgRef, name, moveValue) {
@@ -20,13 +18,13 @@ export default function Watermark() {
     // wmstart                               ======   wmend  水印区间
     // lgstart   ****************************         lgend  合法区间
 
-    // 另外由于居中定位给原图和水印图都加了百分比定位和百分比平移，计算时要补上对齐
+    const upperName = name.slice(0,1).toUpperCase()+ name.slice(1)
 
-    const computedValue = getCSNum(wmRef, name) + moveValue;
-    const bgl = getCSNum(bgRef, name === "top" ? 'height' : 'width');
-    const wml = getCSNum(wmRef, name === "top" ? 'height' : 'width');
+    const computedValue = wmRef['offset' + upperName] + moveValue;
+    const bgl = bgRef['offset' + (name === "top" ? 'Height' : 'Width')];
+    const wml = wmRef['offset' + (name === "top" ? 'Height' : 'Width')];
 
-    const bgStart = getCSNum(bgRef, name) - 0.5 * (bgl - wml);
+    const bgStart = bgRef['offset' + upperName];
     const bgEnd = bgStart + bgl - wml;
 
     if (computedValue < bgStart) return bgStart;
@@ -34,16 +32,20 @@ export default function Watermark() {
     return computedValue;
   };
 
-
   function handleOriginInputChange(e) {
      
-    if(!e.target.files[0]){
-      if(document.getElementById('bgImg')){document.getElementById('bgImg').remove()};
-      return;
+    if(document.getElementById('bgImg')){document.getElementById('bgImg').remove()};
+    if(document.getElementById('wmImg')){
+      document.getElementById('wmImg').remove(); 
+      watermarkInputRef.current.value = null;
     };
+    if(!e.target.files[0])return;
     
     const img = document.createElement('img');
     img.id = 'bgImg';
+    img.style.height = '100%';
+    img.style.width = 'auto';
+    img.style.objectFit = 'contain';
     img.src = URL.createObjectURL(e.target.files[0]);
     img.onload = function () {
       previewBackgroundRef.current.append(img)
@@ -52,16 +54,22 @@ export default function Watermark() {
 
   function handleWatermarkInputChange(e) {
     
-    if(!e.target.files[0]){
-      if(document.getElementById('wmImg')){document.getElementById('wmImg').remove()};
-      return;
-    };
+    if(document.getElementById('wmImg')){document.getElementById('wmImg').remove()};
+    if(!document.getElementById('bgImg')){ alert('please select a origin picture!'); return};
+    if(!e.target.files[0])return;
+
+    const bgRef = document.getElementById('bgImg');
+    const bgScaleFactor = bgRef.offsetHeight / bgRef.naturalHeight;
 
     const img = document.createElement('img');
     img.id = 'wmImg';
+    img.draggable = true;
+    img.style.position = 'absolute';
     img.src = URL.createObjectURL(e.target.files[0]);
     img.onload = function () {
-      previewWatermarkRef.current.append(img)
+      previewWatermarkRef.current.append(img);
+      img.style.height = img.naturalHeight * bgScaleFactor + 'px';
+      img.style.width = 'auto';
     };
     img.addEventListener("dragstart", handleWatermarkDragstart);
     img.addEventListener("dragend", handleWatermarkDragend);
@@ -76,9 +84,8 @@ export default function Watermark() {
     dropDistance.x = e.screenX - dropDistance.x;
     dropDistance.y = e.screenY - dropDistance.y;
 
-    const bgRef = previewBackgroundRef.current;
-    const wmRef = previewWatermarkRef.current;
-
+    const bgRef = document.getElementById('bgImg');
+    const wmRef = document.getElementById('wmImg');
 
     wmRef.style.top = getNewDistance(wmRef, bgRef, 'top', dropDistance.y) + 'px';
     wmRef.style.left = getNewDistance(wmRef, bgRef, 'left', dropDistance.x) + 'px';
@@ -89,23 +96,21 @@ export default function Watermark() {
     if(!document.getElementById('bgImg')){ alert('please select a origin picture!'); return};
     if(!document.getElementById('wmImg')){ alert('please select a watermark picture!'); return};
 
-    const bgRef = previewBackgroundRef.current;
-    const wmRef = previewWatermarkRef.current;
+    const bgRef = document.getElementById('bgImg');
+    const wmRef = document.getElementById('wmImg');
 
-    const canvas = document.createElement('canvas',
-      {
-        height: getCSNum(bgRef, 'height') + 'px',
-        width: getCSNum(bgRef, 'width') + 'px'
-      });
+    const canvas = document.createElement('canvas');
+    canvas.height = bgRef.naturalHeight;
+    canvas.width = bgRef.naturalWidth;
     const ctx = canvas.getContext("2d");
 
     ctx.drawImage(document.getElementById('bgImg'), 0, 0);
 
-    // TODO: 可以梳理一下看有没有更简便的偏移坐标算法
-    let offsetX = getCSNum(wmRef, 'left') - (getCSNum(bgRef, 'left') - 0.5 * (getCSNum(bgRef, 'width') - getCSNum(wmRef, 'width')));
-    let offsetY = getCSNum(wmRef, 'top') - (getCSNum(bgRef, 'top') - 0.5 * (getCSNum(bgRef, 'height') - getCSNum(wmRef, 'height')));
+    const bgScaleFactor = bgRef.naturalHeight / bgRef.offsetHeight;
+    let offsetX = wmRef.offsetLeft - bgRef.offsetLeft;
+    let offsetY = wmRef.offsetTop - bgRef.offsetTop;
 
-    ctx.drawImage(document.getElementById('wmImg'), offsetX, offsetY);
+    ctx.drawImage(document.getElementById('wmImg'), offsetX * bgScaleFactor, offsetY * bgScaleFactor);
 
     const el = document.createElement('a');
     el.href = canvas.toDataURL();
@@ -131,6 +136,7 @@ export default function Watermark() {
           type='file'
           accept='image/*'
           onChange={handleWatermarkInputChange}
+          ref={watermarkInputRef}
         ></input>
       </div>
       <div className={styles.preview}>
