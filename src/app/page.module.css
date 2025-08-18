@@ -7,7 +7,8 @@
     "watermark"
     "output"
     "preview";
-  grid-template-rows: repeat(3, 1fr) 7fr; /* 3.各区域 宽高设置 */
+  grid-template-rows: repeat(3, 1fr) 7fr;
+  /* 3.各区域 宽高设置 */
   grid-template-columns: 1fr;
 }
 
@@ -25,21 +26,33 @@
   flex-flow: column;
 }
 
+.previewText{
+  color: rgb(255, 255, 255);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3rem;
+  z-index: 5;
+}
+
 .previewBox {
   flex-grow: 1;
   width: 100%;
   position: relative;
+  z-index: 2;
 }
 
 .previewBackground {
   position: absolute;
-  background-color: green;
+  background-color: rgb(84, 227, 108);
   top: 0;
   left: 0;
   bottom: 0;
   right: 0;
   margin: auto;
   font-size: 0;
+  z-index: 3;
 }
 
 .previewWatermark {
@@ -50,10 +63,29 @@
   right: 0;
   margin: auto;
   font-size: 0;
+  z-index: 4;
 }
 
 .output {
   grid-area: output;
+  align-content: center;
+}
+
+.generateButton {
+  background-color: #0093c4;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
+.generateButton:hover {
+  background-color: #40a1c2;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .main>div {
@@ -68,7 +100,8 @@
     grid-template-areas:
       "origin watermark output"
       "preview preview preview ";
-    grid-template-rows: 1fr 7fr; /* 3.各区域 宽高设置 */
+    grid-template-rows: 1fr 7fr;
+    /* 3.各区域 宽高设置 */
     grid-template-columns: repeat(3, 1fr);
   }
 }

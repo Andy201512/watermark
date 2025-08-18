@@ -1,6 +1,5 @@
 "use client"
 import styles from './page.module.css'
-import { useState } from 'react';
 import { useRef } from 'react';
 
 export default function Watermark() {
@@ -8,6 +7,7 @@ export default function Watermark() {
   const watermarkInputRef = useRef(null)
   const previewBackgroundRef = useRef(null);
   const previewWatermarkRef = useRef(null);
+  const previewTextRef = useRef(null);
   const dropDistance = { x: 0, y: 0 };
 
   // 获取新的水印定位
@@ -49,6 +49,8 @@ export default function Watermark() {
     img.src = URL.createObjectURL(e.target.files[0]);
     img.onload = function () {
       previewBackgroundRef.current.append(img)
+      // 隐藏预览绿幕文字
+      previewTextRef.current.style.visibility = 'hidden';
     };
   };
 
@@ -64,6 +66,9 @@ export default function Watermark() {
     const img = document.createElement('img');
     img.id = 'wmImg';
     img.draggable = true;
+    img.classList.add('draggable');
+    document.styleSheets[0].insertRule(".draggable { cursor: move; cursor: -webkit-move; }");
+    document.styleSheets[0].insertRule(".draggable:active { cursor: move; cursor: -webkit-move;}");
     img.style.position = 'absolute';
     img.src = URL.createObjectURL(e.target.files[0]);
     img.onload = function () {
@@ -73,6 +78,10 @@ export default function Watermark() {
     };
     img.addEventListener("dragstart", handleWatermarkDragstart);
     img.addEventListener("dragend", handleWatermarkDragend);
+        // 添加放入相关事件，以改变鼠标显示为禁止符号的问题
+    previewWatermarkRef.current.addEventListener("drag", (event) => {event.preventDefault()});
+    previewWatermarkRef.current.addEventListener("dragenter", (event) => {event.preventDefault();});
+    previewWatermarkRef.current.addEventListener("dragover", (event) => {event.preventDefault()});
   };
 
   function handleWatermarkDragstart(e) {
@@ -114,7 +123,7 @@ export default function Watermark() {
 
     const el = document.createElement('a');
     el.href = canvas.toDataURL();
-    el.download = '合成图片';
+    el.download = '合成图片' + new Date().getTime();
 
     const event = new MouseEvent('click');
     el.dispatchEvent(event);
@@ -123,7 +132,7 @@ export default function Watermark() {
   return (
     <main className={styles.main}>
       <div className={styles.origin}>
-        <p>origin picture</p>
+        <p>原始图片</p>
         <input
           type='file'
           accept='image/*'
@@ -131,7 +140,7 @@ export default function Watermark() {
         ></input>
       </div>
       <div className={styles.watermark}>
-        <p>watermark picture</p>
+        <p>水印图片</p>
         <input
           type='file'
           accept='image/*'
@@ -140,11 +149,10 @@ export default function Watermark() {
         ></input>
       </div>
       <div className={styles.output}>
-        <p>output picture</p>
-        <button onClick={handleGenerateButtonClick}>generate</button>
+        <button className={styles.generateButton} onClick={handleGenerateButtonClick}>生成水印图</button>
       </div>
       <div className={styles.preview}>
-        <p>preview</p>
+        <div ref={previewTextRef} className={styles.previewText}>预览绿幕</div>
         <div className={styles.previewBox}>
           <div ref={previewBackgroundRef} className={styles.previewBackground}></div>
           <div ref={previewWatermarkRef} className={styles.previewWatermark}></div>
