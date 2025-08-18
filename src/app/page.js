@@ -8,7 +8,8 @@ export default function Watermark() {
   const previewBackgroundRef = useRef(null);
   const previewWatermarkRef = useRef(null);
   const previewTextRef = useRef(null);
-  const dropDistance = { x: 0, y: 0 };
+  const mouseStartPoint = { x: 0, y: 0 };
+  const mouseEndPoint = { x: 0, y: 0 };
 
   // 获取新的水印定位
   function getNewDistance(wmRef, bgRef, name, moveValue) {
@@ -85,19 +86,19 @@ export default function Watermark() {
   };
 
   function handleWatermarkDragstart(e) {
-    dropDistance.x = e.screenX;
-    dropDistance.y = e.screenY;
+    mouseStartPoint.x = e.screenX;
+    mouseStartPoint.y = e.screenY;
   };
 
   function handleWatermarkDragend(e) {
-    dropDistance.x = e.screenX - dropDistance.x;
-    dropDistance.y = e.screenY - dropDistance.y;
+    mouseEndPoint.x = e.screenX;
+    mouseEndPoint.y = e.screenY;
 
     const bgRef = document.getElementById('bgImg');
     const wmRef = document.getElementById('wmImg');
 
-    wmRef.style.top = getNewDistance(wmRef, bgRef, 'top', dropDistance.y) + 'px';
-    wmRef.style.left = getNewDistance(wmRef, bgRef, 'left', dropDistance.x) + 'px';
+    wmRef.style.top = getNewDistance(wmRef, bgRef, 'top', mouseEndPoint.y - mouseStartPoint.y) + 'px';
+    wmRef.style.left = getNewDistance(wmRef, bgRef, 'left', mouseEndPoint.x - mouseStartPoint.x) + 'px';
   };
 
   function handleGenerateButtonClick() {
@@ -122,7 +123,7 @@ export default function Watermark() {
     ctx.drawImage(document.getElementById('wmImg'), offsetX * bgScaleFactor, offsetY * bgScaleFactor);
 
     const el = document.createElement('a');
-    el.href = canvas.toDataURL();
+    el.href = canvas.toDataURL("image/jpeg", 0.6);
     el.download = '合成图片' + new Date().getTime();
 
     const event = new MouseEvent('click');
@@ -157,6 +158,9 @@ export default function Watermark() {
           <div ref={previewBackgroundRef} className={styles.previewBackground}></div>
           <div ref={previewWatermarkRef} className={styles.previewWatermark}></div>
         </div>
+      </div>
+      <div className={styles.parameter}>
+        
       </div>
     </main>
   );

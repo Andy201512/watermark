@@ -1,15 +1,13 @@
 .main {
   display: grid;
-  padding: 2rem;
-  min-height: 100vh;
+  height: 100vh;
+  width: 100vw;
   grid-template-areas:
-    "origin"
-    "watermark"
-    "output"
-    "preview";
-  grid-template-rows: repeat(3, 1fr) 7fr;
-  /* 3.各区域 宽高设置 */
-  grid-template-columns: 1fr;
+      "origin watermark output"
+      "preview preview preview "
+      "parameter parameter parameter";
+    grid-template-rows: 1fr 8fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
 }
 
 .origin {
@@ -87,7 +85,8 @@
   border: none;
   border-radius: 12px;
   color: white;
-  padding: 15px 32px;
+  padding: 10px 27px;
+  margin: 5px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
@@ -104,14 +103,8 @@
   text-align: center;
 }
 
-@media (min-width: 700px) {
-  .main {
-    padding: 4rem;
-    grid-template-areas:
-      "origin watermark output"
-      "preview preview preview ";
-    grid-template-rows: 1fr 7fr;
-    /* 3.各区域 宽高设置 */
-    grid-template-columns: repeat(3, 1fr);
-  }
+.parameter {
+  grid-area: parameter;
+  align-content: center;
+  background-color: white;
 }
