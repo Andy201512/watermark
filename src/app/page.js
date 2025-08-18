@@ -123,7 +123,7 @@ export default function Watermark() {
     ctx.drawImage(document.getElementById('wmImg'), offsetX * bgScaleFactor, offsetY * bgScaleFactor);
 
     const el = document.createElement('a');
-    el.href = canvas.toDataURL("image/jpeg", 0.6);
+    el.href = canvas.toDataURL("image/jpeg", 0.8);
     el.download = '合成图片' + new Date().getTime();
 
     const event = new MouseEvent('click');
