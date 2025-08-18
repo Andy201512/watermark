@@ -14,10 +14,20 @@
 
 .origin {
   grid-area: origin;
+  align-content: center;
+  background-color: white;
+  border-right: 2px dotted;
 }
 
 .watermark {
   grid-area: watermark;
+  align-content: center;
+  background-color: white;
+  border-right: 2px dotted;
+}
+
+.origin>input, .watermark>input{
+  display:none
 }
 
 .preview {
@@ -69,6 +79,7 @@
 .output {
   grid-area: output;
   align-content: center;
+  background-color: white;
 }
 
 .generateButton {
@@ -81,6 +92,7 @@
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
+  cursor: pointer;
 }
 
 .generateButton:hover {
@@ -90,8 +102,6 @@
 
 .main>div {
   text-align: center;
-  border: 1px;
-  border-style: dashed;
 }
 
 @media (min-width: 700px) {

@@ -132,7 +132,7 @@ export default function Watermark() {
   return (
     <main className={styles.main}>
       <div className={styles.origin}>
-        <p>原始图片</p>
+        <button className={styles.generateButton} onClick={(e)=>{e.target.nextElementSibling.click()}}>上传背景图</button>
         <input
           type='file'
           accept='image/*'
@@ -140,7 +140,7 @@ export default function Watermark() {
         ></input>
       </div>
       <div className={styles.watermark}>
-        <p>水印图片</p>
+        <button className={styles.generateButton} onClick={(e)=>{e.target.nextElementSibling.click()}}>上传水印图</button>
         <input
           type='file'
           accept='image/*'
